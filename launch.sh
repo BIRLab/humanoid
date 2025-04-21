@@ -89,20 +89,6 @@ wait_motors_online() {
 
     # head
     wait_for_usb scut humanoid 205D32834D31 1
-
-    # waist
-    # wait_for_usb scut humanoid 2064378F5948 1
-
-    # left leg
-    # wait_for_usb scut humanoid 205732834D31 1
-
-    # right leg
-    # wait_for_usb scut humanoid 206F32844D31 1
-}
-
-wait_chassis_online() {
-    wait_for_path "/dev/input/js0" 1
-    wait_for_path "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0" 1
 }
 
 azure_tts() {
@@ -131,12 +117,6 @@ wait_and_play_sound() {
     aplay -D sysdefault:CARD=DELI14870 $1
 }
 
-wait_and_launch_chassis() {
-    wait_chassis_online
-    wait_and_play_sound "$SOUNDS_DIR"/sound7.wav &
-    ros2 launch humanoid_chassis joy_control.py
-}
-
 # catch error
 trap 'handle_error' ERR
 
@@ -158,9 +138,6 @@ amixer -q -c DELI14870 sset Mic 80%
 echo "Set sound card volumn success!"
 wait_and_play_sound "$SOUNDS_DIR"/sound1.wav
 
-# wait and launch chassis background
-# wait_and_launch_chassis &
-
 # wait for motor devices
 wait_motors_online
 echo "All devices are connected!"
@@ -169,10 +146,6 @@ wait_and_play_sound "$SOUNDS_DIR"/sound3.wav
 # wait for network
 wait_network_online
 wait_and_play_sound "$SOUNDS_DIR"/sound2.wav
-
-# ros2 launch humanoid_bringup bringup.py
-# ros2 launch humanoid_bringup bringup_without_chat.py
-# ros2 launch humanoid_bringup bringup_direct.py
 
 # mode select
 wait_and_play_sound "$SOUNDS_DIR"/sound4.wav
@@ -190,5 +163,5 @@ if [[ $asr_result == *"导演"* ]]; then
     ros2 launch humanoid_bringup bringup_direct.py
 else
     wait_and_play_sound "$SOUNDS_DIR"/sound5.wav
-    ros2 launch humanoid_bringup bringup.py
+    ros2 launch humanoid_bringup bringup_without_chat.py
 fi
